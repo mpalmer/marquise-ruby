@@ -25,7 +25,26 @@ wish to use:
 
     s = Marquise.new('tcp://chateau.example.com:5560')
 
-Then tell Marquise your data points:
+When you're finished with your instance, you should close it, to cleanup
+file handles and such:
+
+    s.close
+
+If you're someone who doesn't like to stuff around with manual resource
+release, there's also the very Rubyish block form:
+
+    Marquise.open('tcp://chateau.example.com:5560') do |s|
+        # Do things with s
+    end
+
+Which will create a new Marquise object, yield it to your block, then close
+off the thing when you're done.
+
+
+# Sending data points
+
+You send data points through a `Marquise` instance by `tell`ing it; these
+are the simplest possible forms for each type of data Vaultaire can store:
 
     s.tell(42)              # Send an integer
     s.tell(Math::PI)        # Send a float
@@ -33,13 +52,6 @@ Then tell Marquise your data points:
     s.tell("Hello World".encode("ASCII-8BIT")  # Send a binary blob
     s.tell                  # Send a counter increment
 
-Vaultaire stores a timestamp with every data point; by default, this is
-`Time.now`.  If you'd like to specify some other timestamp, you can do that,
-too, by passing an instance of `Time`:
-
-    t = Time.now - 86400    # We got the answer yesterday
-    s.tell(42, t, :answer => 'ultimate')
-    
 
 ## Types and type conversion
 

@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
 	s.files = `git ls-files`.split("\n")
 
 	s.add_runtime_dependency 'ffi', '~> 1.9'
+	s.add_runtime_dependency 'ffi_dry'
 	s.add_runtime_dependency 'git-version-bump', '~> 0.7'
 
 	s.add_development_dependency 'rspec', "~> 2.14"
@@ -27,4 +28,6 @@ Gem::Specification.new do |s|
 	s.add_development_dependency 'guard-spork'
 	s.add_development_dependency 'guard-rspec'
 	s.add_development_dependency 'rb-inotify', '~> 0.9'
+	s.add_development_dependency 'plymouth'
+	s.add_development_dependency 'pry-debugger'
 end
