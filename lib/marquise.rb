@@ -47,7 +47,8 @@ class Marquise
 			raise RuntimeError,
 			      "libmarquise failed; check syslog (no, seriously)"
 		end
-		
+
+		$stderr.puts "Consumer is #{@consumer.inspect}" if $DEBUG
 		@connections = {}
 
 		@janitor = Janitor.new(@consumer, @connections)
@@ -55,6 +56,11 @@ class Marquise
 	end
 	
 	def tell(*args)
+		if @consumer.nil?
+			raise IOError,
+			      "Connection has been closed"
+		end
+
 		val, ts, opts = parse_tell_opts(args)
 				
 		k, v, len = if opts.length == 0
@@ -152,7 +158,9 @@ class Marquise
 		if @connections[th].nil?
 			raise RuntimeError.new("marquise_connect() failed... consult syslog (no, seriously)")
 		end
-		
+
+		$stderr.puts "Created new connection #{@connections[th].inspect} for #{th.inspect}" if $DEBUG
+
 		nil
 	end
 	
@@ -175,8 +183,15 @@ class Marquise
 		end
 		
 		def call(*args)
-			@conns.values.each { |c| Marquise::FFI.marquise_close(c) }
+			$stderr.puts "Janitor is running for #{@ptr.inspect}/#{@conns.inspect}" if $DEBUG
+			@conns.values.each do |c|
+				$stderr.puts "Pre-clean #{c.inspect}" if $DEBUG
+				Marquise::FFI.marquise_close(c)
+				$stderr.puts "Post-clean #{c.inspect}" if $DEBUG
+			end
+			$stderr.puts "Pre-clean #{@ptr.inspect}" if $DEBUG
 			Marquise::FFI.marquise_consumer_shutdown(@ptr)
+			$stderr.puts "Cleaned up #{@ptr.inspect} and #{@conns.inspect}" if $DEBUG
 		end
 	end
 	

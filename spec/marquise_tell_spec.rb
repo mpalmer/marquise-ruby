@@ -23,5 +23,19 @@ describe Marquise do
 			       /Invalid call to Marquise#tell/
 			     )
 		end
+
+		it "assplodes if #close has previously been called" do
+			Marquise::FFI.
+			  should_receive(:marquise_consumer_shutdown).
+			  with('#tell')
+
+			marquise.close
+
+			expect { marquise.tell }.
+			  to raise_error(
+			       IOError,
+			       /Connection has been closed/
+			     )
+		end
 	end
 end
