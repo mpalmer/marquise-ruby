@@ -79,7 +79,7 @@ class Marquise
 			                k,
 			                v,
 			                len,
-			                ts.to_f * 1_000_000_000
+			                (ts.to_f * 1_000_000_000).to_i
 			              )
 		elsif val.respond_to? :to_str and val.respond_to? :encoding
 			s = val.to_str
