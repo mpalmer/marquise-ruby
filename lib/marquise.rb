@@ -41,8 +41,13 @@ class Marquise
 	# possibility of losing data points in the event of a spectacular
 	# failure, but also improves performance.
 	def initialize(zmq_url, batch_period = 5)
+		if ENV['LIBMARQUISE_ORIGIN'].nil?
+			raise RuntimeError,
+			      "LIBMARQUISE_ORIGIN env var not set -- Marquise will not work"
+		end
+
 		@consumer = Marquise::FFI.marquise_consumer_new(zmq_url, batch_period)
-		
+
 		if @consumer.nil?
 			raise RuntimeError,
 			      "libmarquise failed; check syslog (no, seriously)"
@@ -59,6 +64,11 @@ class Marquise
 		if @consumer.nil?
 			raise IOError,
 			      "Connection has been closed"
+		end
+
+		if connection.nil?
+			raise RuntimeError,
+			      "Connection is nil -- this is a bad thing"
 		end
 
 		val, ts, opts = parse_tell_opts(args)
