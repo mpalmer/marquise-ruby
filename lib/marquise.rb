@@ -95,11 +95,11 @@ class Marquise
 			s = val.to_str
 			method = nil
 			
-			if s.encoding.to_s == 'ASCII-8BIT' or !s.force_encoding('UTF-8').valid_encoding?
+			if s.encoding == Encoding::BINARY or !s.force_encoding(Encoding::UTF_8).valid_encoding?
 				method = :marquise_send_binary
 			else
 				method = :marquise_send_text
-				s = s.encode('UTF-8')
+				s = s.encode(Encoding::UTF_8)
 			end
 
 			Marquise::FFI.send(
